@@ -1,0 +1,20 @@
+{
+  "name": "update-state",
+  "version": "0.0.0",
+  "description": "Update a state object or array with easy syntax. Never have to worry about writing reducers or creating actions. Pass in previous state as first argument, and updater object that describes what you want to update.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "state",
+    "update",
+    "redux",
+    "react",
+    "state-management",
+    "replace redux",
+    "simpler redux"
+  ],
+  "author": "wjs",
+  "license": "ISC"
+}
