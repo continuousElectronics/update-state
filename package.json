@@ -2,9 +2,11 @@
   "name": "update-state",
   "version": "0.0.1",
   "description": "Update a state object or array with easy syntax. Never have to worry about writing reducers or creating actions. Pass in previous state as first argument, and updater object that describes what you want to update.",
-  "main": "index.js",
+  "main": "build.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack-dev-server --open --config webpack.test.js",
+    "test": "webpack --config webpack.test.js && node test.build.js",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,19 @@
     "simpler redux"
   ],
   "author": "wjs",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "babel-loader": "^8.0.6",
+    "redux": "^4.0.5",
+    "redux-actions": "^2.6.5",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "webpack-dev-server": "^3.10.1"
+  }
 }
