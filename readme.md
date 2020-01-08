@@ -21,11 +21,16 @@ The updater object is traversed recursively and looks for matching keys until it
 3. if the updater object has a `Function` anywhere, it will be invoked with the following argument vector supplied
 
 {
+
 prevState: [previous state corresponding to whatever the value of the matching key structure is],
+
 map: [function with previous state bound to it. takes a function argument that will map over the previous state],
+
 filter: [function with previous state bound to it. takes a function argument that will filter over the previous state],
 reduce: [function with previous state bound to it. takes a function argument that will reduce over the previous state],
+
 mapWithUpdater: [same as map, except now the value you return from the function you provide acts as an updater]
+
 }
 
 ## Example with Redux
