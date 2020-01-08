@@ -1,5 +1,5 @@
 const path = require("path");
-console.log("o");
+
 module.exports = {
   entry: "./dev.js",
   output: {
