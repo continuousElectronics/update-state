@@ -1,12 +1,12 @@
 {
   "name": "update-state",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Update a state object or array with easy syntax. Never have to worry about writing reducers or creating actions. Pass in previous state as first argument, and updater object that describes what you want to update.",
   "main": "build.js",
   "scripts": {
     "dev": "webpack-dev-server --open --config webpack.test.js",
     "test": "webpack --config webpack.test.js && node test.build.js",
-    "build": "webpack"
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
