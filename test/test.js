@@ -50,5 +50,38 @@ store.dispatch(actions.increment(6)); // { counter: 16 }
 store.dispatch(actions.decrement()); // { counter: 15 }
 store.dispatch(actions.decrement(12)); // { counter: 3 }
 store.dispatch(actions.addAlbum(1, "Obzen"));
+// ...
+// artists: {
+//   1: {
+//     name: "Meshuggah",
+//     albums: ["Koloss", "Chaosphere", "Nothing"]
+//   },
+// ...
+
 store.dispatch(actions.updateArtists({ favorite: true }));
+// ...
+// artists: {
+//   1: {
+//     ...
+//     favorite: true
+//   },
+//   2: {
+//     ...
+//     favorite: true
+//   }
+// ...
+
 store.dispatch(actions.removeArtist(2));
+// {
+//   counter: 10,
+//   artists: {
+//     1: {
+//       name: "Meshuggah",
+//       albums: ["Koloss", "Chaosphere", "Nothing"]
+//     },
+//     2: {
+//       name: "Soundgarden",
+//       albums: ["Superunknown", "Down on the upside"]
+//     }
+//   }
+// }

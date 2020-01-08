@@ -8,118 +8,114 @@ npm i update-state
 
 ## Philosphy
 
-This is to attempt to forumlate a more generalized way to update application state that has simple syntax and eliminates having to write and / or combine a lot of reducer functions and action creators.
+This is to attempt to forumlate a more generalized way to update application state that has simple syntax and eliminates having to write a lot of reducers.
 
-The basic idea is that we describe how we want to update our state with something we will define called an __updater object__. This should be an object that contains the data we want to update, and is the same shape as the state object. The goal is to be able to look at an updater object and easily deduce what it is updating since it needs takes on the same shape as the state object in order to work properly.
+The default export is a reducer function. The first argument is the previous state you wish to update, and the second argument is what we will define as an **updater object**. This should be an object that contains the data we want to update, and is the same shape as the state object. The goal is to be able to look at an updater object and easily deduce what it is updating since it takes on the same shape as the state object in order to work properly.
 
-Below are some examples with Redux. See How it works for more details.
+The updater object is traversed recursively and looks for matching keys until it can't go deeper. It then compares the values of the matching key structure with the following rules.
 
-## Simple Example with Redux
+1. if Matching types of `Array` are found, the array entries from the updater are spread into the array from the previous state object
 
-There are 2 exports for redux being shown in the example below. Here were are using redux with one single reducer and one action creator (neither of which we had to even write)
+2. if Matching types of `Object` are found, the key value pairs from the updater are spread into the object from the previous state object.
+
+3. if the updater object has a `Function` anywhere, it will be invoked with the following argument vector supplied
+
+{
+prevState: [previous state corresponding to whatever the value of the matching key structure is],
+map: [function with previous state bound to it. takes a function argument that will map over the previous state],
+filter: [function with previous state bound to it. takes a function argument that will filter over the previous state],
+reduce: [function with previous state bound to it. takes a function argument that will reduce over the previous state],
+mapWithUpdater: [same as map, except now the value you return from the function you provide acts as an updater]
+}
+
+## Example with Redux
 
 ```js
-import {createStore, compose} from "redux";
-import {reduxReducer, reduxUpdate} from "update-state";
+import { createStore, applyMiddleware } from "redux";
+import logger from "redux-logger";
+import updateState from "update-state";
+import { createActions } from "redux-actions";
 
 const initState = {
-  menu: {
-    open: false,
-    items: [
-      {href: "/about", name: "About"},
-      {href: "/home", name: "home"}
-    ]
-  },
+  counter: 10,
+  artists: {
+    1: {
+      name: "Meshuggah",
+      albums: ["Koloss", "Chaosphere", "Nothing"]
+    },
+    2: {
+      name: "Soundgarden",
+      albums: ["Superunknown", "Down on the upside"]
+    }
+  }
 };
 
-const store = createStore(reduxReducer, initState);
-const updateState = compose(store.dispatch, reduxUpdate);
+// If you follow the pattern of using an updater object as the payload of your object,
+// the below reducer could be the only redux reducer you have to write for your whole app.
+const reducer = function(state, { payload }) {
+  if (!payload) return state;
+  return updateState(state, payload);
+};
 
-// example of opening the menu
-updateState({ menu: {open: true} });
-// state is now
-// {
-//   menu: {
-//     open: true,
-//     items: [
-//       {href: "/about", name: "About"},
-//       {href: "/home", name: "Home"}
-//     ]
-//   }
-// }
+const store = createStore(reducer, initState, applyMiddleware(logger));
 
-// example making appState busy.
-updateState({
-  appState: { busy: true }
+const actions = createActions({
+  INCREMENT: (incAmount = 1) => ({
+    counter: ({ prevState }) => prevState + incAmount
+  }),
+  DECREMENT: (decAmount = 1) => ({
+    counter: ({ prevState }) => prevState - decAmount
+  }),
+  UPDATE_ARTISTS: updater => ({
+    artists: ({ mapWithUpdater }) => mapWithUpdater(() => updater)
+  }),
+  ADD_ALBUM: (id, album) => ({
+    artists: {
+      [id]: { albums: [album] }
+    }
+  }),
+  REMOVE_ARTIST: id => ({
+    artists: ({ filter }) => filter((a, aid) => id != aid)
+  })
 });
-// state is now
-// {
-//   appState: { busy: true },
-//   menu: {
-//     open: true,
-//     items: [
-//       {href: "/about", name: "About"},
-//       {href: "/home", name: "Home"}
-//     ]
-//   }
-// }
 
-// example of updating the menu item names
-// if the item on the updater object is a function and is an array on the state object,
-// we can can use the built in map function and only have to return another updater object for each array item
-// filter and reduce work the same as the regulary JS Array methods.
-// they are being proxied since a copy of the array 
-updateState({
-  menu: {
-    items: ({map}) => map(function (item) {
-      // it will not stop you from mutating the `item` argument here, but you shouldn't since you are using redux.
-      // allowing you to return an updater object to map each item is to alleviate spread syntax,
-      // which can get tedious espeically when updating deeper levels of an objects
-      return {
-        name: item.name + " Page"
-      }
-    })
-  }
-});
-// state is now
-// {
-//   appState: { busy: true },
-//   menu: {
-//     open: true,
-//     items: [
-//       {href: "/about", name: "About Page"},
-//       {href: "/home", name: "Home Page"}
-//     ]
-//   }
-// }
+store.dispatch(actions.increment(6)); // { counter: 16 }
+store.dispatch(actions.decrement()); // { counter: 15 }
+store.dispatch(actions.decrement(12)); // { counter: 3 }
+store.dispatch(actions.addAlbum(1, "Obzen"));
+// ...
+// artists: {
+//   1: {
+//     name: "Meshuggah",
+//     albums: ["Koloss", "Chaosphere", "Nothing"]
+//   },
+// ...
 
-// example of adding a menu item
-// since the values for the key items on both the updater object and the state are arrays,
-// whatever items are in the updater object array are spread into the state
-updateState({
-  menu: {
-    items: [
-      {href: "/blog", name: "Blog Page"}
-    ]
-  }
-});
-// state is now
+store.dispatch(actions.updateArtists({ favorite: true }));
+// ...
+// artists: {
+//   1: {
+//     ...
+//     favorite: true
+//   },
+//   2: {
+//     ...
+//     favorite: true
+//   }
+// ...
+
+store.dispatch(actions.removeArtist(2));
 // {
-//   appState: { busy: true },
-//   menu: {
-//     open: true,
-//     items: [
-//       {href: "/about", name: "About Page"},
-//       {href: "/home", name: "Home Page"},
-//       {href: "/blog", name: "Blog Page"}
-//     ]
+//   counter: 10,
+//   artists: {
+//     1: {
+//       name: "Meshuggah",
+//       albums: ["Koloss", "Chaosphere", "Nothing"]
+//     },
+//     2: {
+//       name: "Soundgarden",
+//       albums: ["Superunknown", "Down on the upside"]
+//     }
 //   }
 // }
 ```
-
-`reduxReducer` is a simple redux reducer that has one case in a switch responding to the type `__UPDATE_STATE__`. It updates the state using the updater object you pass in corresponding to `action.updaterObject`
-
-`reduxUpdate` is an action creator that takes the updaterObject as a single argument and returns `{type, updaterObject}` (which corresponds to the single case in the aforementioned reduxReducer)
-
-## How it works
-
