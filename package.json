@@ -1,6 +1,6 @@
 {
   "name": "update-state",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Update a state object or array with easy syntax. Never have to worry about writing reducers or creating actions. Pass in previous state as first argument, and updater object that describes what you want to update.",
   "main": "build.js",
   "scripts": {
