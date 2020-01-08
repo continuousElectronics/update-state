@@ -1,6 +1,6 @@
 {
   "name": "update-state",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Update a state object or array with easy syntax. Never have to worry about writing reducers or creating actions. Pass in previous state as first argument, and updater object that describes what you want to update.",
   "main": "build.js",
   "scripts": {
@@ -32,9 +32,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10"
-  },
-  "dependencies": {
+    "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
   }
 }
