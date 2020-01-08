@@ -1,4 +1,4 @@
-import {createStore, applyMiddleware} from "redux";
+import { createStore, applyMiddleware } from "redux";
 import logger from "redux-logger";
 import updateState from "../dev";
 import { createActions } from "redux-actions";
@@ -19,40 +19,36 @@ const initState = {
 
 // If you follow the pattern of using an updater object as the payload of your object,
 // the below reducer could be the only redux reducer you have to write for your whole app.
-const reducer = function (state, {payload}) {
+const reducer = function(state, { payload }) {
   if (!payload) return state;
   return updateState(state, payload);
 };
 
-const store = createStore(
-  reducer, initState, applyMiddleware(logger)
-);
+const store = createStore(reducer, initState, applyMiddleware(logger));
 
 const actions = createActions({
   INCREMENT: (incAmount = 1) => ({
-    counter: (amount) => amount + incAmount
+    counter: ({ prevState }) => prevState + incAmount
   }),
   DECREMENT: (decAmount = 1) => ({
-    counter: (amount) => amount - decAmount
+    counter: ({ prevState }) => prevState - decAmount
   }),
-  UPDATE_ARTISTS: (updater) => ({
-    artists: (artists, {mapWithUpdater}) => mapWithUpdater(() => updater, artists)
+  UPDATE_ARTISTS: updater => ({
+    artists: ({ mapWithUpdater }) => mapWithUpdater(() => updater)
   }),
   ADD_ALBUM: (id, album) => ({
     artists: {
-      [id]: { albums: [ album ] }
+      [id]: { albums: [album] }
     }
   }),
-  REMOVE_ARTIST: (id) => ({
-    artists: (artists, {filter}) => filter(
-      (a, aid) => id == aid, artists
-    )
+  REMOVE_ARTIST: id => ({
+    artists: ({ filter }) => filter((a, aid) => id != aid)
   })
 });
 
-store.dispatch(actions.increment(6));  // { counter: 16 }
-store.dispatch(actions.decrement());   // { counter: 15 }
+store.dispatch(actions.increment(6)); // { counter: 16 }
+store.dispatch(actions.decrement()); // { counter: 15 }
 store.dispatch(actions.decrement(12)); // { counter: 3 }
 store.dispatch(actions.addAlbum(1, "Obzen"));
-store.dispatch(actions.updateArtists({favorite: true}));
+store.dispatch(actions.updateArtists({ favorite: true }));
 store.dispatch(actions.removeArtist(2));
