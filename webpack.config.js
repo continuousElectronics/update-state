@@ -1,4 +1,4 @@
-const path   = require("path");
+const path = require("path");
 const common = require("./webpack");
 
 module.exports = {
@@ -8,5 +8,13 @@ module.exports = {
     path: path.resolve(__dirname)
   },
   mode: "production",
-  module: {rules: [...common.rules]}
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: "node_modules",
+        use: ["babel-loader"]
+      }
+    ]
+  }
 };
