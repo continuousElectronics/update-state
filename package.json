@@ -1,6 +1,6 @@
 {
   "name": "update-state",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Update a state object or array with easy syntax",
   "main": "build.js",
   "scripts": {
