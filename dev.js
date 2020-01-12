@@ -9,14 +9,9 @@ import {
 
 export default function updateState(prevState, updater) {
   if (isObjLiteral(prevState) && isObjLiteral(updater)) {
-    const nextState = reduce(
-      function(acc, updaterVal, key) {
-        acc[key] = updateState(prevState[key], updaterVal);
-
-        return acc;
-      },
-      updater,
-      {}
+    const nextState = map(
+      (val, key) => updateState(prevState[key], val),
+      updater
     );
 
     return { ...prevState, ...nextState };
@@ -25,26 +20,15 @@ export default function updateState(prevState, updater) {
     return [...prevState, ...updater];
   }
   if (isFunction(updater)) {
-    return updater(getArg(prevState));
+    return updater(prevState);
   }
   return updater;
 }
 
-function mapWithUpdater(fn, objOrArr) {
+export { map, filter, reduce };
+
+export function mapWithUpdater(fn, objOrArr) {
   return map(function(val, keyOrIdx) {
     return updateState(val, fn(val, keyOrIdx));
   }, objOrArr);
-}
-
-function getArg(prevState) {
-  const fnArg =
-    isArray(prevState) || isObjLiteral(prevState) ? prevState : [prevState];
-
-  return {
-    prevState,
-    map: f => map(f, fnArg),
-    filter: f => filter(f, fnArg),
-    reduce: (f, init) => reduce(f, fnArg, init),
-    mapWithUpdater: (f, init) => mapWithUpdater(f, fnArg, init)
-  };
 }
