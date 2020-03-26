@@ -1,5 +1,4 @@
-const path   = require("path");
-const common = require("./webpack");
+const path = require("path");
 
 module.exports = {
   mode: "development",
@@ -11,5 +10,18 @@ module.exports = {
   devServer: {
     contentBase: "./test"
   },
-  module: {rules: [...common.rules]}
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node-modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"]
+          }
+        }
+      }
+    ]
+  }
 };

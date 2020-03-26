@@ -1,6 +1,4 @@
 .eslintrc.js
 .gitignore
-future.js
-ReactContext.js
 test*
 webpack*
