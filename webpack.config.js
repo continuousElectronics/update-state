@@ -4,7 +4,8 @@ module.exports = {
   entry: "./dev.js",
   output: {
     filename: "build.js",
-    path: path.resolve(__dirname)
+    path: path.resolve(__dirname),
+    libraryTarget: "commonjs2"
   },
   mode: "production",
   module: {
